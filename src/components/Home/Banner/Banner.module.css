@@ -1,0 +1,314 @@
+.banner {
+    width: 100%;
+    min-height: 900px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding: 60px 0;
+    background: linear-gradient(
+        114.09953344581817deg,
+        rgb(244, 239, 229) 28.963%,
+        rgb(233, 224, 207) 40.702%,
+        rgb(237, 234, 222) 110.37%
+    );
+}
+
+.content {
+    position: relative;
+    z-index: 2;
+    max-width: 590px;
+}
+
+/* Eyebrow */
+.eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+    color: var(--primary-color);
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    line-height: 1.4;
+    text-transform: uppercase;
+}
+
+.eyebrowLine {
+    width: 150px;
+    height: 1px;
+    background-color: #A9A79E;
+    position: relative;
+    z-index: 1;
+}
+
+.star {
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: -1;
+    color: var(--primary-color);
+    font-size: 20px;
+    line-height: 1;
+}
+
+/* Main Heading */
+.title {
+    margin: 0;
+}
+
+.title em {
+    color: var(--primary-color);
+    font-family: var(--font-heading);
+    font-style: italic;
+}
+
+/* Decorative Line */
+
+.decorativeLine {
+    display: flex;
+    align-items: center;
+    width: 125px;
+    margin: 42px 0 48px;
+
+    color: #c78a3d;
+}
+
+.decorativeLine::before {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: #c78a3d;
+}
+
+.decorativeLine span {
+    margin-left: -4px;
+    font-size: 20px;
+    line-height: 1;
+}
+
+/* Description */
+
+.description {
+    max-width: 505px;
+    margin: 0;
+
+    color: #62635e;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.8;
+}
+
+/* Buttons */
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+    margin-top: 42px;
+}
+
+.primaryButton {
+    min-width: 298px;
+    min-height: 63px;
+    padding: 0 28px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+
+    border-radius: 7px;
+    background: #2d5260;
+    box-shadow: 0 14px 25px rgba(38, 53, 58, 0.24);
+
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-decoration: none;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        background-color 0.3s ease;
+}
+
+.primaryButton:hover {
+    background-color: #244552;
+    box-shadow: 0 17px 30px rgba(38, 53, 58, 0.3);
+    transform: translateY(-2px);
+}
+
+.arrow {
+    font-size: 30px;
+    font-weight: 300;
+    line-height: 1;
+}
+
+.secondaryButton {
+    position: relative;
+
+    padding: 8px 0;
+
+    color: #14191a;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    line-height: 1.5;
+    text-decoration: none;
+}
+
+.secondaryButton::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+    height: 1px;
+
+    background-color: #c78a3d;
+}
+
+/* Book Image */
+
+.imageWrapper {
+    position: relative;
+    width: 470px;
+    margin-left: auto;
+}
+
+.imageWrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Tablet */
+
+@media (max-width: 1199.98px) {
+    .title {
+        font-size: clamp(62px, 7vw, 88px);
+    }
+
+    .eyebrowLine {
+        width: 100px;
+    }
+
+    .actions {
+        gap: 30px;
+    }
+
+    .primaryButton {
+        min-width: 260px;
+    }
+}
+
+/* Mobile / Tablet */
+
+@media (max-width: 991.98px) {
+    /* .header is position:absolute (min-height 90px + 40px padding here);
+       banner needs enough top padding to clear it since min-height:auto
+       no longer gives the desktop flex-centering its natural clearance. */
+    .banner {
+        min-height: auto;
+        padding: 150px 0 20px;
+    }
+
+    .content {
+        max-width: 650px;
+        padding: 0;
+    }
+
+    .imageWrapper {
+        margin: 0 auto;
+        padding: 20px 0 60px;
+    }
+
+    .imageWrapper img {
+        width: min(90%, 600px);
+    }
+}
+
+/* Mobile (Figma breakpoint: 768px) */
+
+@media (max-width: 767.98px) {
+    .banner {
+        min-height: 500px;
+    }
+}
+
+/* Mobile: .header min-height drops to 76px (+40px padding) here */
+
+@media (max-width: 575.98px) {
+    .banner {
+        padding: 130px 0 20px;
+    }
+
+    .content {
+        padding: 0;
+    }
+
+    .eyebrow {
+        gap: 10px;
+        margin-bottom: 25px;
+        font-size: 8px;
+        letter-spacing: 0.15em;
+    }
+
+    .eyebrowLine {
+        width: 45px;
+    }
+
+    .star {
+        font-size: 16px;
+    }
+
+    .title {
+        font-size: clamp(55px, 17vw, 78px);
+        line-height: 0.9;
+    }
+
+    .decorativeLine {
+        width: 100px;
+        margin: 32px 0 35px;
+    }
+
+    .description {
+        font-size: 14px;
+        line-height: 1.75;
+    }
+
+    .actions {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 25px;
+        margin-top: 32px;
+    }
+
+    .primaryButton {
+        width: 100%;
+        min-width: 0;
+        min-height: 58px;
+        font-size: 14px;
+    }
+
+    .secondaryButton {
+        font-size: 14px;
+    }
+
+    .imageWrapper {
+        padding: 20px 0 45px;
+    }
+
+    .imageWrapper img {
+        width: 95%;
+    }
+}

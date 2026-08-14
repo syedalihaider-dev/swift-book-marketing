@@ -1,0 +1,326 @@
+.section {
+    width: 100%;
+    padding: 90px 0;
+    background: var(--bg-color);
+    overflow: hidden;
+}
+
+.row {
+    display: flex;
+    align-items: flex-start;
+    gap: 56px;
+}
+
+/* Left column */
+
+.left {
+    flex: 0 0 34%;
+    min-width: 0;
+}
+
+.eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    line-height: 1.4;
+    text-transform: uppercase;
+}
+
+.eyebrowLine {
+    width: 100px;
+    height: 1px;
+    background-color: #a9a79e;
+    position: relative;
+    z-index: 1;
+}
+
+.star {
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: -1;
+    color: var(--secondary-color);
+    font-size: 18px;
+    line-height: 1;
+}
+
+/* The global h2 rule's line-height (90px) is generous for the wider,     */
+/* 2-line headings elsewhere — this one runs 4 lines, so it's tightened    */
+/* here. 1.08 keeps ascenders/descenders (Q, g, y) clear of the next line  */
+/* — anything below ~1.02 starts nicking them in Cormorant Garamond.       */
+.heading {
+    margin: 0;
+    line-height: 1.08;
+    color: var(--dark-color);
+}
+
+.heading em {
+    color: var(--primary-color);
+    font-style: italic;
+}
+
+.decorativeLine {
+    display: flex;
+    align-items: center;
+    width: 125px;
+    margin: 28px 0 26px;
+    color: var(--secondary-color);
+}
+
+.decorativeLine::before {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: #ddd6c4;
+}
+
+.decorativeLine span {
+    margin-left: -4px;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.description {
+    max-width: 430px;
+    margin: 0 0 28px;
+    color: #62635e;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.7;
+}
+
+.ctaCard {
+    padding: 28px 24px;
+    border-radius: 16px;
+    background: #12212e;
+}
+
+.ctaIcon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid var(--secondary-color);
+    color: var(--secondary-color);
+}
+
+.ctaTitle {
+    margin: 0;
+    color: var(--secondary-color);
+    font-family: var(--font-heading);
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+.ctaDescription {
+    margin: 12px 0 20px;
+    max-width: 300px;
+    color: rgba(247, 243, 234, 0.75);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+.ctaLink {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 6px;
+    color: var(--light-color);
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    line-height: 1.4;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.ctaLink::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background-color: rgba(247, 243, 234, 0.5);
+}
+
+/* Right column — accordion */
+
+.right {
+    flex: 1;
+    min-width: 0;
+}
+
+.accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.item {
+    border-radius: 14px;
+    background: #f4efe3;
+    border: 1px solid #e6ddc9;
+    overflow: hidden;
+}
+
+.itemHeading {
+    margin: 0;
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+.itemHeader {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 24px;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+}
+
+.itemNumber {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e9e2d0;
+    color: var(--primary-color);
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.itemQuestion {
+    flex: 1;
+    min-width: 0;
+    color: var(--dark-color);
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.3;
+}
+
+.itemToggle {
+    flex-shrink: 0;
+    color: var(--secondary-color);
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1;
+}
+
+.itemAnswerRow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin: 0 24px 20px;
+    padding: 20px 0 0 20px;
+    border-top: 1px solid #e6ddc9;
+    border-left: 2px solid var(--secondary-color);
+}
+
+.itemAnswer {
+    margin: 0;
+    color: #62635e;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.7;
+}
+
+.itemToggleGhost {
+    flex-shrink: 0;
+    color: var(--secondary-color);
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1;
+}
+
+/* Tablet */
+
+@media (max-width: 1439.98px) {
+    .heading {
+        font-size: 52px;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .section {
+        padding: 60px 0;
+    }
+
+    .row {
+        flex-direction: column;
+        gap: 48px;
+    }
+
+    .left {
+        flex: 1 1 auto;
+    }
+
+    .heading {
+        font-size: clamp(32px, 6vw, 46px);
+    }
+}
+
+/* Mobile */
+
+@media (max-width: 575.98px) {
+    .section {
+        padding: 40px 0;
+    }
+
+    .eyebrow {
+        gap: 10px;
+        margin-bottom: 16px;
+        font-size: 8px;
+    }
+
+    .eyebrowLine {
+        width: 45px;
+    }
+
+    .description {
+        font-size: 14px;
+    }
+
+    .itemHeader {
+        padding: 16px 16px;
+        gap: 14px;
+    }
+
+    .itemNumber {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+    }
+
+    .itemQuestion {
+        font-size: 16px;
+    }
+
+    .itemAnswerRow {
+        margin: 0 16px 16px;
+        padding-left: 14px;
+    }
+}

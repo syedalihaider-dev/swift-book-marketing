@@ -1,0 +1,114 @@
+.header {
+  width: 100%;
+  padding: 20px 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+.logoLink {
+  width: 208px;
+  height: auto;
+}
+
+.logoLink img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.beginLink {
+  position: relative;
+  margin-right: 40px;
+  padding: 8px 0;
+  color: var(--primary-color);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.beginLink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background-color: var(--primary-color);
+  transform-origin: left;
+  transition: var(--cubic);
+}
+
+.beginLink:hover::after {
+  transform: scaleX(0.65);
+}
+
+.menuButton {
+  width: 43px;
+  height: 43px;
+  padding: 0;
+  border: 1px solid rgba(20, 25, 30, 0.15);
+  background: transparent;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  cursor: pointer;
+}
+
+.menuButton span {
+  display: block;
+  width: 18px;
+  height: 1px;
+  background-color: #4f514d;
+  transition: transform 0.3s ease;
+}
+
+@media (max-width: 991.98px) {
+  .headerRow,
+  .nav {
+    min-height: 90px;
+  }
+
+  .logoLink img {
+    width: 180px;
+  }
+
+  .beginLink {
+    margin-right: 25px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .headerRow,
+  .nav {
+    min-height: 76px;
+  }
+
+  .logoLink img {
+    width: 155px;
+  }
+
+  .beginLink {
+    margin-right: 15px;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+  }
+
+  .menuButton {
+    width: 38px;
+    height: 38px;
+  }
+
+  .menuButton span {
+    width: 16px;
+  }
+}

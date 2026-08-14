@@ -1,0 +1,265 @@
+:root {
+  /* Colors */
+  --primary-color: #1D4A39;
+  --secondary-color: #CA9656;
+  --accent-color: #87639D;
+  --success-color: #000C69;
+  --danger-color: #dc3545;
+  --warning-color: #FFC902;
+  --light-color: #fff;
+  --dark-color: #101510;
+  --gray-color: #ffffff87;
+  --light-gray-color: #F0F0F0;
+  --bg-color: #F7F3EA;
+
+  /* Typography */
+  --font-size-base: 16px;
+  --font-size-lg: 75px;
+  --font-size-sm: 14px;
+  --font-size-xl: 111px;
+
+  /* Font Family */
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+  --font-signature: var(--font-signature);
+
+  /* Font Weight */
+  --font-100: 100;
+  --font-200: 200;
+  --font-300: 300;
+  --font-400: 400;
+  --font-500: 500;
+  --font-600: 600;
+  --font-700: 700;
+  --font-800: 800;
+  --font-900: 900;
+
+  /* Transition */
+  --cubic: all 0.6s cubic-bezier(0.615, 0, 0.07, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  /* font-family: var(--font-body); */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  color: var(--dark-color);
+}
+
+.wrapper {
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--primary-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary-color);
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  display: block;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+  outline: none;
+}
+
+.combo_btn {
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.btn,
+.btn-check:focus+.btn,
+.btn:focus {
+  box-shadow: none;
+  outline: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  list-style-type: none;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: all 0.6s cubic-bezier(0.615, 0, 0.07, 1);
+}
+
+a:hover {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+h1 {
+  font-size: 111px;
+  line-height: 100px;
+  letter-spacing: -0.06em;
+  font-weight: var(--font-300);
+}
+
+h2 {
+  font-size: var(--font-size-lg);
+  line-height: 90px;
+  font-weight: var(--font-300);
+  letter-spacing: -2.25px;
+}
+
+h3 {
+  font-size: 45px;
+  line-height: 50px;
+}
+
+h4 {
+  font-size: 35px;
+  line-height: 40px;
+}
+
+h5 {
+  font-size: 30px;
+  line-height: 35px;
+}
+
+h6 {
+  font-size: 24px;
+  line-height: 35px;
+  letter-spacing: -0.72px;
+  font-weight: var(--font-medium);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+}
+
+/* The universal `*` reset above sets font-family directly on every element */
+/* (including <em>/<i>), which beats inheritance from a heading ancestor —  */
+/* without this, italic accents inside headings silently fall back to the  */
+/* body font everywhere they're used. */
+h1 em,
+h1 i,
+h2 em,
+h2 i,
+h3 em,
+h3 i,
+h4 em,
+h4 i,
+h5 em,
+h5 i,
+h6 em,
+h6 i {
+  font-family: inherit;
+}
+
+p {
+  font-size: var(--font-size-base);
+  line-height: 29px;
+  letter-spacing: -0.01em;
+  font-weight: var(--font-500);
+}
+
+.primary-text {
+  color: var(--primary-color);
+}
+
+.primary-bg {
+  background-color: var(--primary-color);
+}
+
+.secondary-text {
+  color: var(--secondary-color);
+}
+
+.secondary-bg {
+  background-color: var(--secondary-color);
+}
+
+.font-800 {
+  font-weight: var(--font-bold);
+}
+
+.scroll_block {
+  overflow: auto;
+  padding-right: 10px
+}
+
+.scroll_block::-webkit-scrollbar {
+  width: 1px
+}
+
+.scroll_block::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll_block::-webkit-scrollbar-thumb {
+  background: transparent
+}
+
+.container,
+.container-lg,
+.container-md,
+.container-sm,
+.container-xl,
+.container-xxl {
+  max-width: 1425px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Scroll-reveal animations (see components/common/ScrollAnimations)  */
+/* ------------------------------------------------------------------ */
+
+/* Hidden only once JS has taken over (html.js is set by an inline,       */
+/* pre-hydration script in layout.js) so there is no flash of unstyled    */
+/* content and content stays visible with JS disabled.                    */
+html.js [fade-up] {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js [fade-up] {
+    opacity: 1 !important;
+  }
+}

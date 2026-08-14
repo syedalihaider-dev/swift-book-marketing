@@ -1,0 +1,431 @@
+.section {
+    width: 100%;
+    padding: 90px 0;
+    background: var(--bg-color);
+    overflow: hidden;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+/* Left column */
+
+.left {
+    flex: 0 0 38%;
+    min-width: 0;
+}
+
+.eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    color: var(--primary-color);
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    line-height: 1.4;
+    text-transform: uppercase;
+}
+
+.eyebrowLine {
+    width: 130px;
+    height: 1px;
+    background-color: #a9a79e;
+    position: relative;
+    z-index: 1;
+}
+
+.star {
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: -1;
+    color: var(--secondary-color);
+    font-size: 18px;
+    line-height: 1;
+}
+
+/* The global h2 rule's flat 75px works for wider columns elsewhere, but   */
+/* this column is narrower — clamp it (max 75px) so each line fits clean. */
+.heading {
+    margin: 0;
+    color: var(--dark-color);
+}
+
+.heading em {
+    color: var(--primary-color);
+    font-style: italic;
+    letter-spacing: -0.03em;
+}
+
+.decorativeLine {
+    display: flex;
+    align-items: center;
+    width: 125px;
+    margin: 30px 0 28px;
+    color: var(--secondary-color);
+}
+
+.decorativeLine::before {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: #ddd6c4;
+}
+
+.decorativeLine span {
+    margin-left: -4px;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.description {
+    max-width: 380px;
+    margin: 0;
+    color: #62635e;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.7;
+}
+
+.viewAllButton {
+    margin-top: 32px;
+    min-width: 240px;
+    min-height: 56px;
+    padding: 0 26px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    border-radius: 7px;
+    background: #2d5260;
+
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    line-height: 1;
+    text-decoration: none;
+    text-transform: uppercase;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        background-color 0.3s ease;
+}
+
+.viewAllButton:hover {
+    background-color: #244552;
+    box-shadow: 0 14px 25px rgba(38, 53, 58, 0.24);
+    transform: translateY(-2px);
+}
+
+.buttonArrow {
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1;
+}
+
+/* Right column — carousel */
+
+.right {
+    flex: 1;
+    min-width: 0;
+}
+
+.track {
+    display: flex;
+    align-items: stretch;
+    gap: 24px;
+}
+
+.card {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    background: #f9f6ee;
+    box-shadow: 0 16px 34px rgba(16, 21, 16, 0.08);
+}
+
+/* Not clipped — .cardIcon anchors here and needs to poke past the photo's */
+/* bottom edge. The rounded/clipped photo itself lives in .cardImageInner. */
+.cardImage {
+    position: relative;
+    width: 100%;
+}
+
+.cardImageInner {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 274 / 288;
+    border-radius: 20px 20px 0 0;
+    overflow: hidden;
+}
+
+.cardImg {
+    object-fit: cover;
+}
+
+.cardIcon {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, 50%);
+    z-index: 2;
+
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: #12212e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 20px rgba(16, 21, 16, 0.25);
+}
+
+.cardIcon img {
+    width: 40px;
+    height: 40px;
+}
+
+.cardBody {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 44px 24px 26px;
+    border-radius: 0 0 20px 20px;
+    background: #f9f6ee;
+}
+
+.cardCategory {
+    margin: 0 0 8px;
+    color: var(--secondary-color);
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    line-height: 1.4;
+    text-transform: uppercase;
+}
+
+.cardTitle {
+    margin: 0;
+    color: var(--dark-color);
+    font-family: var(--font-heading);
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+.cardExcerpt {
+    margin: 12px 0 0;
+    color: #62635e;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+.cardDivider {
+    width: 40px;
+    height: 1px;
+    margin: 18px 0 14px;
+    background: var(--secondary-color);
+    opacity: 0.5;
+}
+
+.cardMeta {
+    margin: 0 0 16px;
+    color: #8a8a80;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.metaDot {
+    margin: 0 6px;
+}
+
+.readMore {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    align-self: flex-start;
+
+    color: var(--dark-color);
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    line-height: 1.4;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.readMoreArrow {
+    display: inline-flex;
+    transition: transform 0.25s ease;
+}
+
+.readMore:hover .readMoreArrow {
+    transform: translateX(4px);
+}
+
+/* Pagination */
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 44px;
+}
+
+.arrow {
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #12212e;
+    color: var(--light-color);
+    cursor: pointer;
+    transition:
+        transform 0.3s ease,
+        background-color 0.3s ease;
+}
+
+.arrow svg {
+    width: 18px;
+    height: 18px;
+}
+
+.arrow:hover {
+    background: var(--primary-color);
+    transform: scale(1.06);
+}
+
+.arrow:focus-visible {
+    outline: 2px solid var(--secondary-color);
+    outline-offset: 3px;
+}
+
+.dots {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ddd6c4;
+    cursor: pointer;
+    transition: background-color 0.25s ease, transform 0.25s ease;
+}
+
+.dot:hover {
+    background: var(--secondary-color);
+}
+
+.dotActive {
+    background: var(--secondary-color);
+    transform: scale(1.25);
+}
+
+/* Tablet */
+
+@media (max-width: 991.98px) {
+    .section {
+        padding: 60px 0;
+    }
+
+    .row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 48px;
+    }
+
+    .left {
+        flex: 1 1 auto;
+        text-align: center;
+    }
+
+    .eyebrow {
+        justify-content: center;
+    }
+
+    .description {
+        margin: 0 auto;
+    }
+
+    .heading {
+        font-size: clamp(32px, 6vw, 48px);
+    }
+
+    .decorativeLine {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .track {
+        flex-direction: column;
+    }
+}
+
+/* Mobile */
+
+@media (max-width: 575.98px) {
+    .section {
+        padding: 40px 0;
+    }
+
+    .eyebrow {
+        gap: 10px;
+        margin-bottom: 20px;
+        font-size: 8px;
+    }
+
+    .eyebrowLine {
+        width: 45px;
+    }
+
+    .description {
+        font-size: 14px;
+    }
+
+    .viewAllButton {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .cardBody {
+        padding: 40px 20px 22px;
+    }
+
+    .cardTitle {
+        font-size: 22px;
+    }
+
+    .pagination {
+        margin-top: 32px;
+    }
+}
