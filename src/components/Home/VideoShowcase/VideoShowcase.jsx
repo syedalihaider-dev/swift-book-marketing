@@ -81,7 +81,7 @@ export default function VideoShowcase() {
             <div className="container">
                 <div className="row align-items-center">
                     <div className="col-12 col-lg-5">
-                        <div className={styles.content}>
+                        <div className={styles.content} scroll-reveal="video-showcase-reveal">
                             <div className={styles.eyebrow}>
                                 <span>Client reviews</span>
                                 <div className={styles.eyebrowLine}>
@@ -107,9 +107,9 @@ export default function VideoShowcase() {
                     </div>
 
                     <div className="col-12 col-lg-7">
-                        <div className={styles.videoList}>
+                        <div className={styles.videoList} scroll-reveal="video-showcase-reveal">
                             {VIDEOS.map((video) => (
-                                <div key={video.id} className={styles.videoCard} fade-up="video-showcase-cards">
+                                <div key={video.id} className={styles.videoCard}>
                                     <div className={styles.thumb}>
                                         <Image
                                             src={video.image}

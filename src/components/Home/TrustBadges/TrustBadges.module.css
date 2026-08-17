@@ -6,20 +6,7 @@
 }
 
 .viewport {
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    touch-action: pan-x;
-    cursor: grab;
-}
-
-.viewport::-webkit-scrollbar {
-    display: none;
-}
-
-.viewport:active {
-    cursor: grabbing;
+    overflow: hidden;
 }
 
 .track {
@@ -30,6 +17,7 @@
     margin: 0;
     padding: 0 100px;
     list-style: none;
+    will-change: transform;
 }
 
 .card {

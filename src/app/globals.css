@@ -63,6 +63,26 @@ body {
   overflow: hidden;
 }
 
+/* ------------------------------------------------------------------ */
+/* GSAP ScrollSmoother wrapper (see components/common/SmoothScroll)   */
+/* ------------------------------------------------------------------ */
+
+#smooth-wrapper {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+#smooth-content {
+  width: 100%;
+  overflow: visible;
+  /* Present from first paint (not just once JS applies its own transform)  */
+  /* so absolutely-positioned descendants (e.g. the header) resolve their   */
+  /* containing block against this scrolling layer immediately — otherwise */
+  /* they'd briefly anchor to the fixed #smooth-wrapper instead and jump.  */
+  transform: translate3d(0, 0, 0);
+}
+
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -128,6 +148,13 @@ a {
 a:hover {
   color: var(--primary-color);
   text-decoration: underline;
+}
+
+/* Filled brand CTAs (see components/common/MagneticButtons) carry their own */
+/* hover treatment — the global underline above reads as a bug on top of a   */
+/* solid fill, so it's switched off specifically for them.                   */
+[magnetic-btn]:hover {
+  text-decoration: none;
 }
 
 h1 {
@@ -254,12 +281,14 @@ p {
 /* Hidden only once JS has taken over (html.js is set by an inline,       */
 /* pre-hydration script in layout.js) so there is no flash of unstyled    */
 /* content and content stays visible with JS disabled.                    */
-html.js [fade-up] {
+html.js [fade-up],
+html.js [scroll-reveal] {
   opacity: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html.js [fade-up] {
+  html.js [fade-up],
+  html.js [scroll-reveal] {
     opacity: 1 !important;
   }
 }

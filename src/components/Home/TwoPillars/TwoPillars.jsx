@@ -52,7 +52,7 @@ export default function TwoPillars() {
         <section className={styles.section} aria-labelledby="two-pillars-title">
             <div className="container">
                 <div className="row">
-                    <div className="col-12 col-lg-6">
+                    <div className="col-12 col-lg-6" scroll-reveal="two-pillars-header">
                         <div className={styles.eyebrow}>
                             <span>Two pillars, one practice</span>
                             <div className={styles.eyebrowLine}>
@@ -70,8 +70,8 @@ export default function TwoPillars() {
                     </div>
 
                     <div className="col-12 col-lg-5 offset-lg-1">
-                        <div className={styles.intro}>
-                            <p className={styles.introText} fade-up="">
+                        <div className={styles.intro} scroll-reveal="two-pillars-header">
+                            <p className={styles.introText}>
                                 The work is split into two disciplines because they need different
                                 skills. <strong>Strategy and taste run through both,</strong> and the
                                 same team stays with the book from start to finish.
@@ -88,7 +88,7 @@ export default function TwoPillars() {
                         <div key={pillar.numeral} className="col-12 col-lg-6">
                             <div
                                 className={`${styles.card} ${styles[pillar.variant]}`}
-                                fade-up="two-pillars-cards"
+                                scroll-reveal="two-pillars-cards"
                             >
                                 <div className={styles.cardWave} aria-hidden="true" />
 

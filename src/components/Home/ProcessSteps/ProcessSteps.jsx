@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { unwrapStalePinSpacer } from "@/lib/unwrapStalePinSpacer";
 import styles from "./ProcessSteps.module.css";
 
 const STEPS = [
@@ -105,6 +106,13 @@ export default function ProcessSteps() {
                     );
                     return undefined;
                 }
+
+                // See unwrapStalePinSpacer for why this needs to run before
+                // every (re-)pin, not just once.
+                unwrapStalePinSpacer(pinTarget);
+                ScrollTrigger.getAll()
+                    .filter((st) => st.trigger === pinTarget)
+                    .forEach((st) => st.kill());
 
                 pinTarget.classList.add(styles.pinTargetActive);
                 gsap.set(cards[0], { yPercent: 0 });

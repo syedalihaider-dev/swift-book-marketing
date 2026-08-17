@@ -42,7 +42,7 @@ export default function Contact() {
         <section className={styles.section} aria-labelledby="contact-title">
             <div className="container">
                 <div className={styles.row}>
-                    <div className={styles.left}>
+                    <div className={styles.left} scroll-reveal="contact-reveal">
                         <div className={styles.eyebrow}>
                             <span>Let&apos;s connect</span>
                             <div className={styles.eyebrowLine}>
@@ -72,7 +72,7 @@ export default function Contact() {
 
                         <ul className={styles.infoList}>
                             {CONTACT_INFO.map((info) => (
-                                <li key={info.label} className={styles.infoItem} fade-up="contact-info">
+                                <li key={info.label} className={styles.infoItem}>
                                     <span className={styles.infoIcon}>
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img src={info.icon} alt="" width={40} height={40} />
@@ -92,8 +92,8 @@ export default function Contact() {
                         </ul>
                     </div>
 
-                    <div className={styles.right}>
-                        <div className={styles.formCard} fade-up="">
+                    <div className={styles.right} scroll-reveal="contact-reveal">
+                        <div className={styles.formCard}>
                             <div className={styles.formHeader}>
                                 <span className={styles.formIcon}>
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -165,7 +165,7 @@ export default function Contact() {
                                     />
                                 </div>
 
-                                <button type="submit" className={styles.submitButton}>
+                                <button type="submit" className={styles.submitButton} magnetic-btn="">
                                     <span>Send Message</span>
                                     <span className={styles.submitArrow} aria-hidden="true">
                                         →

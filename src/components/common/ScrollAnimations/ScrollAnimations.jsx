@@ -16,6 +16,13 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
  *
  * Images ([puzzle-image] on a position:relative, overflow:hidden image wrapper):
  *   [puzzle-image]    the image assembles from a grid of tiles as it scrolls into view
+ *
+ * Scroll-linked reveals ([scroll-reveal="group"] on section column wrappers):
+ *   Unlike [fade-up] (plays once, a fixed duration, when crossed), elements
+ *   sharing a [scroll-reveal] group are scrubbed — their reveal tracks the
+ *   scroll position directly as the group's first element passes through
+ *   the trigger band, and later members (DOM order) lag behind earlier ones
+ *   so e.g. a left column visibly finishes before a right column starts.
  */
 
 let pluginRegistered = false;
@@ -61,6 +68,42 @@ function initFadeUpGroups(els, prefersReducedMotion) {
                 },
             }
         );
+    });
+}
+
+function initScrollRevealGroups(els, prefersReducedMotion) {
+    const groups = new Map();
+
+    els.forEach((el) => {
+        if (prefersReducedMotion) {
+            gsap.set(el, { opacity: 1 });
+            return;
+        }
+        const groupValue = el.getAttribute("scroll-reveal");
+        const key = groupValue || el;
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(el);
+    });
+
+    groups.forEach((groupEls) => {
+        gsap.set(groupEls, { opacity: 0, y: 40 });
+
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: groupEls[0],
+                start: "top 85%",
+                end: "top 30%",
+                scrub: 0.4,
+                markers: false,
+            },
+        });
+
+        // Each member starts a bit further into the scroll band than the
+        // last (DOM order), so e.g. a left column finishes before a right
+        // column begins instead of both arriving together.
+        groupEls.forEach((el, i) => {
+            tl.to(el, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, i * 0.35);
+        });
     });
 }
 
@@ -153,11 +196,20 @@ export default function ScrollAnimations() {
                     newPuzzleEls.push(el);
                 });
                 initPuzzleImages(newPuzzleEls, prefersReducedMotion, puzzleOverlays);
+
+                const newScrollRevealEls = [];
+                gsap.utils.toArray("[scroll-reveal]").forEach((el) => {
+                    if (el.hasAttribute("data-gs-init")) return;
+                    el.setAttribute("data-gs-init", "true");
+                    initializedEls.push(el);
+                    newScrollRevealEls.push(el);
+                });
+                initScrollRevealGroups(newScrollRevealEls, prefersReducedMotion);
             } catch (error) {
                 // Fail open: never leave content permanently invisible if the
                 // animation setup throws for any reason.
                 console.error("ScrollAnimations init failed, revealing content", error);
-                gsap.set("[fade-up]", { opacity: 1 });
+                gsap.set("[fade-up], [scroll-reveal]", { opacity: 1 });
                 puzzleOverlays.forEach((overlay) => overlay.remove());
             }
         });

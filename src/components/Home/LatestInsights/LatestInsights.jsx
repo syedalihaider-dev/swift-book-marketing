@@ -86,7 +86,7 @@ return (
 <section className={styles.section} aria-labelledby="insights-title">
     <div className="container">
         <div className={styles.row}>
-            <div className={styles.left}>
+            <div className={styles.left} scroll-reveal="insights-reveal">
                 <div className={styles.eyebrow}>
                     <span>Latest insights</span>
                     <div className={styles.eyebrowLine}>
@@ -111,7 +111,7 @@ return (
                     help authors and brands make an impact that lasts.
                 </p>
 
-                <Link href="/blog" className={styles.viewAllButton} fade-up="">
+                <Link href="/blog" className={styles.viewAllButton} magnetic-btn="">
                 <span>View all articles</span>
                 <span className={styles.buttonArrow} aria-hidden="true">
                     →
@@ -119,10 +119,10 @@ return (
                 </Link>
             </div>
 
-            <div className={styles.right}>
+            <div className={styles.right} scroll-reveal="insights-reveal">
                 <div className={styles.track} ref={trackRef}>
                     {visible.map((article) => (
-                    <article key={article.id} className={styles.card} fade-up="insights-cards">
+                    <article key={article.id} className={styles.card}>
                         <div className={styles.cardImage}>
                             <div className={styles.cardImageInner} puzzle-image="">
                                 <Image src={article.image} alt={article.title} fill sizes="(max-width: 991px) 90vw, 27vw"

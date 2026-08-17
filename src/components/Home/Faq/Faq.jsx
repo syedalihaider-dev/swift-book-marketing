@@ -69,7 +69,7 @@ export default function Faq() {
         <section className={styles.section} aria-labelledby="faq-title">
             <div className="container">
                 <div className={styles.row}>
-                    <div className={styles.left}>
+                    <div className={styles.left} scroll-reveal="faq-reveal">
                         <div className={styles.eyebrow}>
                             <span>FAQ</span>
                             <div className={styles.eyebrowLine}>
@@ -98,7 +98,7 @@ export default function Faq() {
                             and my process.
                         </p>
 
-                        <div className={styles.ctaCard} fade-up="">
+                        <div className={styles.ctaCard}>
                             <div className={styles.ctaIcon}>
                                 <ChatIcon />
                             </div>
@@ -113,7 +113,7 @@ export default function Faq() {
                         </div>
                     </div>
 
-                    <div className={styles.right}>
+                    <div className={styles.right} scroll-reveal="faq-reveal">
                         <div className={styles.accordion}>
                             {FAQS.map((item, index) => {
                                 const isOpen = index === openIndex;

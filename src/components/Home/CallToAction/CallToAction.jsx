@@ -34,7 +34,7 @@ export default function CallToAction() {
         <section className={styles.section} aria-labelledby="cta-title">
             <div className="container">
                 <div className={styles.row}>
-                    <div className={styles.left}>
+                    <div className={styles.left} scroll-reveal="cta-reveal">
                         <div className={styles.eyebrow}>
                             <span>Let&apos;s create something meaningful</span>
                             <div className={styles.eyebrowLine}>
@@ -62,14 +62,14 @@ export default function CallToAction() {
                         </p>
 
                         <div className={styles.actions}>
-                            <Link href="/contact-us" className={styles.primaryButton} fade-up="cta-actions">
+                            <Link href="/contact-us" className={styles.primaryButton} magnetic-btn="">
                                 <span>Get in touch</span>
                                 <span className={styles.arrow} aria-hidden="true">
                                     →
                                 </span>
                             </Link>
 
-                            <Link href="/portfolio" className={styles.secondaryButton} fade-up="cta-actions">
+                            <Link href="/portfolio" className={styles.secondaryButton}>
                                 Explore all work
                             </Link>
                         </div>
@@ -79,8 +79,8 @@ export default function CallToAction() {
                         <span>✦</span>
                     </div>
 
-                    <div className={styles.right}>
-                        <div className={styles.highlight} fade-up="">
+                    <div className={styles.right} scroll-reveal="cta-reveal">
+                        <div className={styles.highlight}>
                             <div className={styles.highlightIcon}>
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img src={HIGHLIGHT.icon} alt="" width={70} height={70} />
@@ -97,7 +97,7 @@ export default function CallToAction() {
 
                         <div className={styles.features}>
                             {FEATURES.map((feature) => (
-                                <div key={feature.titleLine1} className={styles.feature} fade-up="cta-features">
+                                <div key={feature.titleLine1} className={styles.feature}>
                                     <div className={styles.featureIcon}>
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img src={feature.icon} alt="" width={56} height={56} />

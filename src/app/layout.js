@@ -4,6 +4,8 @@ import { bodyFont, headingFont, signatureFont } from "./fonts";
 import Header from "@/components/common/Header/Header";
 import Footer from "@/components/common/Footer/Footer";
 import ScrollAnimations from "@/components/common/ScrollAnimations/ScrollAnimations";
+import MagneticButtons from "@/components/common/MagneticButtons/MagneticButtons";
+import SmoothScroll from "@/components/common/SmoothScroll/SmoothScroll";
 
 export const metadata = {
   metadataBase: new URL("https://www.swiftbookmarketing.com"),
@@ -53,12 +55,18 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className={`${bodyFont.variable} ${headingFont.variable} ${signatureFont.variable}`}>
-        <Header />
-        <main>
-        {children}
-        </main>
-        <Footer />
+        <div id="smooth-wrapper">
+          <div id="smooth-content">
+            <Header />
+            <main>
+            {children}
+            </main>
+            <Footer />
+          </div>
+        </div>
         <ScrollAnimations />
+        <MagneticButtons />
+        <SmoothScroll />
       </body>
     </html>
   );
