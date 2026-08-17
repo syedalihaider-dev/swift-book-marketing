@@ -57,6 +57,7 @@
     flex: 1;
     min-width: 0;
     display: flex;
+    justify-content: space-between;
     align-items: stretch;
     gap: 24px;
 }
@@ -364,6 +365,33 @@
     font-size: 13px;
     font-weight: 400;
     line-height: 1.6;
+}
+
+/* Slide indicator dots */
+
+.indicators {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 32px;
+}
+
+.indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+    cursor: default;
+    background: rgba(29, 74, 57, 0.2);
+    transition: background-color 0.35s ease, width 0.35s ease;
+}
+
+.indicatorActive {
+    width: 28px;
+    border-radius: 4px;
+    background: var(--primary-color);
 }
 
 /* Tablet */

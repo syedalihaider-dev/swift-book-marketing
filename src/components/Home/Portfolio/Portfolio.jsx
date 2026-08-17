@@ -6,8 +6,6 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import styles from "./Portfolio.module.css";
 
-// TODO: add more entries as more author case studies become available — the
-// scroll-driven slider already cycles through however many items are here.
 const ITEMS = [
     {
         id: "jennifer-hartman",
@@ -22,7 +20,6 @@ const ITEMS = [
             heading: "Purposeful work that drives impact.",
             description: "Watch how strategy and story come together to create powerful results.",
             thumbnail: "/images/port-women-01.png",
-            // TODO: swap for the real video — direct .mp4 or a YouTube/Vimeo URL both work.
             videoSrc: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
         },
         book: {
@@ -33,6 +30,56 @@ const ITEMS = [
             coverWidth: 197,
             coverHeight: 341,
             caption: "Top 3 in Leadership on Amazon within the first week of launch.",
+        },
+    },
+    {
+        id: "sarah-mitchell",
+        author: {
+            name: "Sarah Mitchell",
+            role: "Author & Speaker",
+            photo: "/images/port-avatar-women-01.png",
+            bio: "Transforming personal stories into bestselling narratives.",
+        },
+        video: {
+            eyebrow: "The author journey",
+            heading: "From manuscript to movement.",
+            description: "A deep dive into the launch strategy that took her book to #1.",
+            thumbnail: "/images/port-women-01.png",
+            videoSrc: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+        },
+        book: {
+            eyebrow: "Featured book",
+            title: "Beyond Words",
+            titleItalic: "A voice that resonates.",
+            cover: "/images/port-assets-01.png",
+            coverWidth: 197,
+            coverHeight: 341,
+            caption: "Over 10,000 copies sold in the first month of release.",
+        },
+    },
+    {
+        id: "amanda-chen",
+        author: {
+            name: "Amanda Chen",
+            role: "Business Author",
+            photo: "/images/port-avatar-women-01.png",
+            bio: "Helping entrepreneurs tell their stories with clarity and purpose.",
+        },
+        video: {
+            eyebrow: "Brand storytelling",
+            heading: "Building a brand through a book.",
+            description: "Discover how a single book became the foundation of a thriving brand.",
+            thumbnail: "/images/port-women-01.png",
+            videoSrc: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+        },
+        book: {
+            eyebrow: "Featured book",
+            title: "Lead With Story",
+            titleItalic: "Purpose-driven growth.",
+            cover: "/images/port-assets-01.png",
+            coverWidth: 197,
+            coverHeight: 341,
+            caption: "Featured in Forbes and named a must-read for entrepreneurs.",
         },
     },
 ];
@@ -48,7 +95,8 @@ function loadFancybox() {
     return fancyboxPromise;
 }
 
-const SCROLL_DISTANCE_PER_ITEM = 0.7; // fraction of a viewport height, per extra item
+// Each extra slide adds this many viewport-heights of scroll distance.
+const SCROLL_DISTANCE_PER_ITEM = 0.8;
 
 export default function Portfolio() {
     const sectionRef = useRef(null);
@@ -60,45 +108,61 @@ export default function Portfolio() {
     const item = ITEMS[index];
 
     useEffect(() => {
-        if (total <= 1) return undefined;
-
         gsap.registerPlugin(ScrollTrigger);
 
         const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (prefersReducedMotion) return undefined;
+        if (prefersReducedMotion || total <= 1) return undefined;
 
         const ctx = gsap.context(() => {
             const el = cardsRef.current;
             let current = 0;
+            let transitioning = false;
 
             const goTo = (nextIndex) => {
-                if (!el || nextIndex === current) return;
+                if (!el || nextIndex === current || transitioning) return;
+                transitioning = true;
                 const direction = nextIndex > current ? "next" : "prev";
                 current = nextIndex;
                 setIndex(nextIndex);
 
                 gsap.to(el, {
                     opacity: 0,
-                    x: direction === "next" ? -30 : 30,
-                    duration: 0.25,
+                    x: direction === "next" ? -40 : 40,
+                    duration: 0.3,
                     ease: "power2.in",
                     onComplete: () => {
                         gsap.fromTo(
                             el,
-                            { opacity: 0, x: direction === "next" ? 30 : -30 },
-                            { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" }
+                            { opacity: 0, x: direction === "next" ? 40 : -40 },
+                            {
+                                opacity: 1,
+                                x: 0,
+                                duration: 0.45,
+                                ease: "power2.out",
+                                onComplete: () => { transitioning = false; },
+                            }
                         );
                     },
                 });
             };
 
+            // Pin the section while scrolling through all slides.
+            // pinSpacing: false keeps surrounding sections flush — no blank
+            // gap is inserted; the extra scroll distance lives in the pin itself.
             ScrollTrigger.create({
                 trigger: sectionRef.current,
-                start: "top center",
+                start: "top top",
                 end: () => `+=${(total - 1) * window.innerHeight * SCROLL_DISTANCE_PER_ITEM}`,
+                pin: true,
+                pinSpacing: true,
+                anticipatePin: 1,
                 invalidateOnRefresh: true,
                 onUpdate: (self) => {
-                    const next = Math.min(total - 1, Math.max(0, Math.floor(self.progress * total)));
+                    // Map progress -> slide index
+                    const next = Math.min(
+                        total - 1,
+                        Math.floor(self.progress * total)
+                    );
                     goTo(next);
                 },
             });
@@ -145,7 +209,7 @@ export default function Portfolio() {
                 <div className={styles.sliderWrap}>
                     <div className={styles.cards} ref={cardsRef}>
                         {/* Author */}
-                        <div className={styles.authorCard} fade-up="portfolio-cards">
+                        <div className={styles.authorCard}>
                             <div className={styles.authorPhotoFrame}>
                                 <span className={styles.archMark} data-side="left" aria-hidden="true">
                                     ✦
@@ -174,8 +238,8 @@ export default function Portfolio() {
                         </div>
 
                         {/* Video */}
-                        <div className={styles.videoCard} fade-up="portfolio-cards">
-                            <div className={styles.videoThumb} puzzle-image="">
+                        <div className={styles.videoCard}>
+                            <div className={styles.videoThumb}>
                                 <Image
                                     src={item.video.thumbnail}
                                     alt={item.video.heading}
@@ -211,7 +275,7 @@ export default function Portfolio() {
                         </div>
 
                         {/* Book */}
-                        <div className={styles.bookCard} fade-up="portfolio-cards">
+                        <div className={styles.bookCard}>
                             <div className={styles.bookCoverWrap} puzzle-image="#efe8d6">
                                 <Image
                                     src={item.book.cover}
@@ -235,6 +299,20 @@ export default function Portfolio() {
                             </div>
                         </div>
                     </div>
+                </div>
+
+                {/* Slide indicators */}
+                <div className={styles.indicators} aria-label="Portfolio slides" role="tablist">
+                    {ITEMS.map((it, i) => (
+                        <button
+                            key={it.id}
+                            type="button"
+                            role="tab"
+                            aria-selected={i === index}
+                            aria-label={`Slide ${i + 1}: ${it.author.name}`}
+                            className={`${styles.indicator} ${i === index ? styles.indicatorActive : ""}`}
+                        />
+                    ))}
                 </div>
             </div>
         </section>
