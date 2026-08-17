@@ -5,55 +5,58 @@
     overflow: hidden;
 }
 
-.pinTarget {
-    position: relative;
-}
-
-/* Pin-active state — only added by JS on desktop with motion allowed.       */
-/* Without JS (or on mobile / reduced-motion) `.card` stays in normal flow,  */
-/* so the section is always a plain, fully-readable, scrollable stack.       */
-.pinTargetActive {
-    height: 100vh;
-    overflow: hidden;
-}
-
-.card {
-    position: relative;
-    padding-top: 56px;
-}
-
-.pinTargetActive .card {
-    position: absolute;
-    inset: 0;
+.list {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    padding-top: 0;
-    background: var(--bg-color);
 }
 
-.pinTargetActive .card .divider {
-    display: none;
+.row {
+    border-bottom: 1px solid #ddd6c4;
 }
 
-.divider {
+.row:first-child {
+    border-top: 1px solid #ddd6c4;
+}
+
+.rowHeader {
+    display: block;
     width: 100%;
-    height: 1px;
-    background-color: #ddd6c4;
+    padding: 28px 0;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+}
+
+/* The active row's own bottom border is redundant with its body's top —   */
+/* it also visually reads better as one continuous open panel without it.  */
+.rowActive .rowHeader {
+    padding-bottom: 8px;
 }
 
 .stepNumber {
     display: block;
-    margin: 28px 0 40px;
-    color: var(--primary-color);
+    color: #a9a79e;
     font-family: var(--font-heading);
     font-size: 30px;
     font-weight: 500;
     line-height: 1;
+    transition: color 0.4s ease;
 }
 
-.pinTargetActive .card .stepNumber {
-    margin-top: 0;
+.rowActive .stepNumber {
+    color: var(--primary-color);
+}
+
+/* Collapsible body */
+
+.rowBody {
+    height: 0;
+    overflow: hidden;
+}
+
+.rowBodyInner {
+    padding-bottom: 48px;
 }
 
 /* Image */
@@ -67,15 +70,12 @@
     box-shadow: 0 20px 45px rgba(16, 21, 16, 0.12);
 }
 
-.pinTargetActive .imageFrame {
-    max-height: 60vh;
-}
-
 .image {
     object-fit: cover;
 }
 
-/* Puzzle-reveal tile grid, sits above the image and scatters away on scroll */
+/* Puzzle-reveal tile grid, sits above the image and scatters away each time */
+/* its row opens. */
 .tileGrid {
     position: absolute;
     inset: 0;
@@ -94,11 +94,7 @@
 
 .content {
     max-width: 460px;
-    padding: 32px 0;
-}
-
-.pinTargetActive .content {
-    padding: 0;
+    padding-top: 8px;
 }
 
 .eyebrow {
@@ -134,11 +130,10 @@
     line-height: 1;
 }
 
-/* font-family/size/weight inherit the global h2 rule (75px, Cormorant */
-/* Garamond Light) — only color and responsive overrides live here.     */
 .heading {
     margin: 0;
     color: var(--dark-color);
+    font-size: 40px;
 }
 
 .heading em {
@@ -179,14 +174,6 @@
     text-transform: uppercase;
 }
 
-/* Below 1600px-ish desktop, the flat 75px global h2 starts crowding a      */
-/* 100vh pinned card — scale it down a touch so nothing overlaps/overflows. */
-@media (max-width: 1439.98px) {
-    .pinTargetActive .heading {
-        font-size: 56px;
-    }
-}
-
 /* Tablet (also the normal-flow / non-pinned breakpoint) */
 
 @media (max-width: 991.98px) {
@@ -194,17 +181,13 @@
         font-size: clamp(32px, 6vw, 48px);
     }
 
-    .card {
-        padding-top: 44px;
-    }
-
-    .stepNumber {
-        margin: 22px 0 28px;
+    .rowBodyInner {
+        padding-bottom: 36px;
     }
 
     .content {
         max-width: 100%;
-        padding: 28px 0 0;
+        padding-top: 24px;
     }
 
     .description,
@@ -220,21 +203,16 @@
         padding: 20px 0 60px;
     }
 
-    .card {
-        padding-top: 32px;
+    .rowHeader {
+        padding: 20px 0;
     }
 
     .stepNumber {
-        margin: 16px 0 20px;
         font-size: 24px;
     }
 
     .imageFrame {
         border-radius: 14px;
-    }
-
-    .content {
-        padding: 20px 0 0;
     }
 
     .eyebrow {

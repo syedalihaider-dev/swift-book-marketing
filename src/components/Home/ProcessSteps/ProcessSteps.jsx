@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { unwrapStalePinSpacer } from "@/lib/unwrapStalePinSpacer";
 import styles from "./ProcessSteps.module.css";
 
 const STEPS = [
@@ -58,192 +57,234 @@ const TILE_COLS = 6;
 const TILE_ROWS = 4;
 const TILES = Array.from({ length: TILE_COLS * TILE_ROWS });
 
-// Card N slides up from the bottom, rests fully covering card N-1, then the
-// next card repeats the same slide+rest before finally releasing the pin.
-const SLOT = 1;
-const SLIDE_PORTION = 0.6;
-
 export default function ProcessSteps() {
     const sectionRef = useRef(null);
-    const pinRef = useRef(null);
-    const cardRefs = useRef([]);
-    cardRefs.current = [];
+    const rowRefs = useRef([]);
+    const headerRefs = useRef([]);
+    const bodyRefs = useRef([]);
 
-    const registerCard = (el) => {
-        if (el && !cardRefs.current.includes(el)) {
-            cardRefs.current.push(el);
-        }
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    // STEPS has a fixed length/order, so each ref can be written straight to
+    // its index — no reset-then-push during render needed.
+    const setRowRef = (index) => (el) => {
+        rowRefs.current[index] = el;
+    };
+    const setHeaderRef = (index) => (el) => {
+        headerRefs.current[index] = el;
+    };
+    const setBodyRef = (index) => (el) => {
+        bodyRefs.current[index] = el;
     };
 
     useEffect(() => {
         gsap.registerPlugin(ScrollTrigger);
 
-        const section = sectionRef.current;
-        const pinTarget = pinRef.current;
-        const cards = cardRefs.current;
-        if (!section || !pinTarget || cards.length === 0) return undefined;
+        // Snapshot only the populated refs — under React StrictMode's dev-only
+        // double-mount, a row can transiently be null between passes, and
+        // these arrays get read again later (in closures) after that point.
+        const rows = rowRefs.current.filter(Boolean);
+        const headers = headerRefs.current.filter(Boolean);
+        const bodies = bodyRefs.current.filter(Boolean);
+        if (!rows.length || rows.length !== bodies.length) return undefined;
 
-        const mm = gsap.matchMedia();
+        const ctx = gsap.context(() => {
+            const mm = gsap.matchMedia();
 
-        mm.add(
-            {
-                isPinned: "(min-width: 992px) and (prefers-reduced-motion: no-preference)",
-                isFlow: "(max-width: 991.98px), (prefers-reduced-motion: reduce)",
-            },
-            (context) => {
-                const { isPinned } = context.conditions;
+            mm.add(
+                "(min-width: 992px) and (prefers-reduced-motion: no-preference)",
+                () => {
+                    let active = 0;
+                    gsap.set(bodies, { height: 0, opacity: 0 });
+                    gsap.set(bodies[0], { height: "auto", opacity: 1 });
+                    rows[0].classList.add(styles.rowActive);
 
-                if (!isPinned) {
-                    // Small screens and reduced-motion: plain stacked flow,
-                    // no pin/slide — every card fully visible and reachable.
-                    // The puzzle tiles only ever get revealed by the pinned
-                    // timeline below, so without it they'd sit permanently
-                    // opaque, hiding every image — hide them outright instead.
-                    gsap.set(cards, { clearProps: "transform" });
-                    gsap.set(
-                        cards.flatMap((card) => Array.from(card.querySelectorAll(`.${styles.tile}`))),
-                        { display: "none" }
-                    );
-                    return undefined;
-                }
+                    const playTiles = (row) => {
+                        const tiles = row.querySelectorAll(`.${styles.tile}`);
+                        if (!tiles.length) return;
+                        gsap.set(tiles, { opacity: 1, scale: 1 });
+                        gsap.to(tiles, {
+                            opacity: 0,
+                            scale: 0.35,
+                            ease: "power2.inOut",
+                            stagger: { each: 0.015, from: "random" },
+                            duration: 0.5,
+                            delay: 0.15,
+                        });
+                    };
+                    playTiles(rows[0]);
 
-                // See unwrapStalePinSpacer for why this needs to run before
-                // every (re-)pin, not just once.
-                unwrapStalePinSpacer(pinTarget);
-                ScrollTrigger.getAll()
-                    .filter((st) => st.trigger === pinTarget)
-                    .forEach((st) => st.kill());
+                    // Height-animating the previous/next body while a live
+                    // "closest header" read runs every scroll tick is a
+                    // feedback loop — the layout shifting mid-transition
+                    // changes what reads as closest, re-triggering another
+                    // activation before the first has settled. Locking out
+                    // new activations until the current pair finishes (and
+                    // re-checking once on the way out) keeps it stable.
+                    let animating = false;
 
-                pinTarget.classList.add(styles.pinTargetActive);
-                gsap.set(cards[0], { yPercent: 0 });
-                gsap.set(cards.slice(1), { yPercent: 100 });
+                    const checkClosest = () => {
+                        const viewportCenter = window.innerHeight / 2;
+                        let closest = 0;
+                        let closestDistance = Infinity;
+                        headers.forEach((header, i) => {
+                            const rect = header.getBoundingClientRect();
+                            const distance = Math.abs(rect.top + rect.height / 2 - viewportCenter);
+                            if (distance < closestDistance) {
+                                closestDistance = distance;
+                                closest = i;
+                            }
+                        });
+                        return closest;
+                    };
 
-                const tl = gsap.timeline({
-                    scrollTrigger: {
-                        trigger: pinTarget,
-                        start: "top top",
-                        end: () => `+=${(cards.length - 1) * SLOT * window.innerHeight}`,
-                        pin: true,
-                        scrub: 1,
-                        invalidateOnRefresh: true,
-                    },
-                });
+                    const activate = (index) => {
+                        if (index === active || animating) return;
+                        const prev = active;
+                        active = index;
+                        animating = true;
+                        setActiveIndex(index);
 
-                cards.forEach((card, i) => {
-                    if (i === 0) return;
-                    const pos = (i - 1) * SLOT;
-                    const tiles = card.querySelectorAll(`.${styles.tile}`);
-                    const textBlock = card.querySelector(`.${styles.content}`);
+                        rows[prev].classList.remove(styles.rowActive);
+                        rows[index].classList.add(styles.rowActive);
 
-                    tl.to(card, { yPercent: 0, ease: "power1.inOut", duration: SLIDE_PORTION }, pos);
-                    if (tiles.length) {
-                        tl.to(
-                            tiles,
-                            {
-                                opacity: 0,
-                                scale: 0.35,
-                                ease: "none",
-                                stagger: { each: 0.015, from: "random" },
-                                duration: SLIDE_PORTION * 0.7,
+                        gsap.to(bodies[prev], {
+                            height: 0,
+                            opacity: 0,
+                            duration: 0.6,
+                            ease: "power3.inOut",
+                        });
+                        gsap.to(bodies[index], {
+                            height: bodies[index].scrollHeight,
+                            opacity: 1,
+                            duration: 0.6,
+                            ease: "power3.inOut",
+                            onComplete: () => {
+                                gsap.set(bodies[index], { height: "auto" });
+                                animating = false;
+                                activate(checkClosest());
                             },
-                            pos + SLIDE_PORTION * 0.3
-                        );
-                    }
-                    if (textBlock) {
-                        tl.from(textBlock, { opacity: 0, y: 24, duration: SLIDE_PORTION * 0.6 }, pos + SLIDE_PORTION * 0.25);
-                    }
-                });
+                        });
+                        playTiles(rows[index]);
+                    };
 
-                // First card's image still gets a puzzle reveal, tied to the
-                // section simply scrolling into view (no pin involved yet).
-                const firstTiles = cards[0].querySelectorAll(`.${styles.tile}`);
-                if (firstTiles.length) {
-                    gsap.to(firstTiles, {
-                        opacity: 0,
-                        scale: 0.35,
-                        ease: "power2.inOut",
-                        stagger: { each: 0.015, from: "random" },
-                        duration: 0.5,
-                        scrollTrigger: {
-                            trigger: section,
-                            start: "top 75%",
-                            toggleActions: "play none none none",
+                    // A continuous "which header is nearest center" check
+                    // (rather than per-header enter/leave edges) can't skip a
+                    // row on a fast or large scroll jump.
+                    ScrollTrigger.create({
+                        trigger: sectionRef.current,
+                        start: "top bottom",
+                        end: "bottom top",
+                        onUpdate: () => {
+                            if (animating) return;
+                            activate(checkClosest());
                         },
                     });
+
+                    return () => {
+                        rows.forEach((row) => row.classList.remove(styles.rowActive));
+                    };
                 }
+            );
 
-                return () => {
-                    pinTarget.classList.remove(styles.pinTargetActive);
-                };
-            }
-        );
+            mm.add("(max-width: 991.98px), (prefers-reduced-motion: reduce)", () => {
+                // Small screens and reduced-motion: every step fully open,
+                // plain readable stack — no scroll-linked accordion, no pin.
+                gsap.set(bodies, { clearProps: "all" });
+                gsap.set(
+                    rows.flatMap((row) => Array.from(row.querySelectorAll(`.${styles.tile}`))),
+                    { display: "none" }
+                );
+                rows.forEach((row) => row.classList.add(styles.rowActive));
+                return undefined;
+            });
 
-        return () => mm.revert();
+            return () => mm.revert();
+        }, sectionRef);
+
+        return () => ctx.revert();
     }, []);
 
     return (
         <section className={styles.section} ref={sectionRef} aria-label="Our publishing process">
             <div className="container">
-                <div className={styles.pinTarget} ref={pinRef}>
-                    {STEPS.map((step, index) => (
-                        <div
-                            key={step.number}
-                            className={styles.card}
-                            ref={registerCard}
-                            style={{ zIndex: index + 1 }}
-                        >
-                            {index === 0 && <div className={styles.divider} aria-hidden="true" />}
+                <div className={styles.list}>
+                    {STEPS.map((step, index) => {
+                        const panelId = `process-step-panel-${step.number}`;
+                        return (
+                            <div key={step.number} className={styles.row} ref={setRowRef(index)}>
+                                <button
+                                    type="button"
+                                    className={styles.rowHeader}
+                                    ref={setHeaderRef(index)}
+                                    aria-expanded={activeIndex === index}
+                                    aria-controls={panelId}
+                                    onClick={(event) =>
+                                        event.currentTarget.scrollIntoView({
+                                            behavior: "smooth",
+                                            block: "center",
+                                        })
+                                    }
+                                >
+                                    <span className={styles.stepNumber}>{step.number}</span>
+                                </button>
 
-                            <span className={styles.stepNumber}>{step.number}</span>
-
-                            <div className="row align-items-center">
-                                <div className="col-12 col-lg-5">
-                                    <div className={styles.imageFrame}>
-                                        <Image
-                                            src={step.image}
-                                            alt={step.alt}
-                                            fill
-                                            sizes="(max-width: 991px) 100vw, 45vw"
-                                            className={styles.image}
-                                        />
-                                        <div className={styles.tileGrid} aria-hidden="true">
-                                            {TILES.map((_, tileIndex) => (
-                                                <div key={tileIndex} className={styles.tile} />
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="col-12 col-lg-6 offset-lg-1">
-                                    <div className={styles.content}>
-                                        <div className={styles.eyebrow}>
-                                            <span>{step.eyebrow}</span>
-                                            <div className={styles.eyebrowLine}>
-                                                <span className={styles.star} aria-hidden="true">
-                                                    ✦
-                                                </span>
+                                <div
+                                    id={panelId}
+                                    className={styles.rowBody}
+                                    ref={setBodyRef(index)}
+                                    aria-hidden={activeIndex !== index}
+                                >
+                                    <div className={styles.rowBodyInner}>
+                                        <div className="row align-items-center">
+                                            <div className="col-12 col-lg-5">
+                                                <div className={styles.imageFrame}>
+                                                    <Image
+                                                        src={step.image}
+                                                        alt={step.alt}
+                                                        fill
+                                                        sizes="(max-width: 991px) 100vw, 45vw"
+                                                        className={styles.image}
+                                                    />
+                                                    <div className={styles.tileGrid} aria-hidden="true">
+                                                        {TILES.map((_, tileIndex) => (
+                                                            <div key={tileIndex} className={styles.tile} />
+                                                        ))}
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        <h2 className={styles.heading}>
-                                            {step.heading}
-                                            <br />
-                                            <em>{step.headingItalic}</em>
-                                        </h2>
+                                            <div className="col-12 col-lg-6 offset-lg-1">
+                                                <div className={styles.content}>
+                                                    <div className={styles.eyebrow}>
+                                                        <span>{step.eyebrow}</span>
+                                                        <div className={styles.eyebrowLine}>
+                                                            <span className={styles.star} aria-hidden="true">
+                                                                ✦
+                                                            </span>
+                                                        </div>
+                                                    </div>
 
-                                        <p className={styles.description}>{step.description}</p>
+                                                    <h2 className={styles.heading}>
+                                                        {step.heading}
+                                                        <br />
+                                                        <em>{step.headingItalic}</em>
+                                                    </h2>
 
-                                        <div className={styles.tagsRow}>
-                                            <div className={styles.tagsLine} aria-hidden="true" />
-                                            <p className={styles.tags}>{step.tags.join(" · ")}</p>
+                                                    <p className={styles.description}>{step.description}</p>
+
+                                                    <div className={styles.tagsRow}>
+                                                        <div className={styles.tagsLine} aria-hidden="true" />
+                                                        <p className={styles.tags}>{step.tags.join(" · ")}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <div className={styles.divider} aria-hidden="true" />
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
         </section>
