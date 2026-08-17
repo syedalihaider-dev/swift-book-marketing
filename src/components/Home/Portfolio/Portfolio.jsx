@@ -1,12 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import styles from "./Portfolio.module.css";
 
-// TODO: add more entries as more author case studies become available —
-// the slider/arrows already cycle through however many items are here.
+// TODO: add more entries as more author case studies become available — the
+// scroll-driven slider already cycles through however many items are here.
 const ITEMS = [
     {
         id: "jennifer-hartman",
@@ -47,42 +48,64 @@ function loadFancybox() {
     return fancyboxPromise;
 }
 
+const SCROLL_DISTANCE_PER_ITEM = 0.7; // fraction of a viewport height, per extra item
+
 export default function Portfolio() {
+    const sectionRef = useRef(null);
+    const cardsRef = useRef(null);
     const [index, setIndex] = useState(0);
     const [loadingVideo, setLoadingVideo] = useState(false);
-    const cardsRef = useRef(null);
 
     const total = ITEMS.length;
     const item = ITEMS[index];
 
-    const goTo = (nextIndex, direction) => {
-        const el = cardsRef.current;
-        if (!el || nextIndex === index) return;
+    useEffect(() => {
+        if (total <= 1) return undefined;
+
+        gsap.registerPlugin(ScrollTrigger);
 
         const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (prefersReducedMotion) {
-            setIndex(nextIndex);
-            return;
-        }
+        if (prefersReducedMotion) return undefined;
 
-        gsap.to(el, {
-            opacity: 0,
-            x: direction === "next" ? -30 : 30,
-            duration: 0.25,
-            ease: "power2.in",
-            onComplete: () => {
+        const ctx = gsap.context(() => {
+            const el = cardsRef.current;
+            let current = 0;
+
+            const goTo = (nextIndex) => {
+                if (!el || nextIndex === current) return;
+                const direction = nextIndex > current ? "next" : "prev";
+                current = nextIndex;
                 setIndex(nextIndex);
-                gsap.fromTo(
-                    el,
-                    { opacity: 0, x: direction === "next" ? 30 : -30 },
-                    { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" }
-                );
-            },
-        });
-    };
 
-    const handlePrev = () => goTo((index - 1 + total) % total, "prev");
-    const handleNext = () => goTo((index + 1) % total, "next");
+                gsap.to(el, {
+                    opacity: 0,
+                    x: direction === "next" ? -30 : 30,
+                    duration: 0.25,
+                    ease: "power2.in",
+                    onComplete: () => {
+                        gsap.fromTo(
+                            el,
+                            { opacity: 0, x: direction === "next" ? 30 : -30 },
+                            { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" }
+                        );
+                    },
+                });
+            };
+
+            ScrollTrigger.create({
+                trigger: sectionRef.current,
+                start: "top center",
+                end: () => `+=${(total - 1) * window.innerHeight * SCROLL_DISTANCE_PER_ITEM}`,
+                invalidateOnRefresh: true,
+                onUpdate: (self) => {
+                    const next = Math.min(total - 1, Math.max(0, Math.floor(self.progress * total)));
+                    goTo(next);
+                },
+            });
+        }, sectionRef);
+
+        return () => ctx.revert();
+    }, [total]);
 
     const handlePlay = async () => {
         setLoadingVideo(true);
@@ -103,7 +126,7 @@ export default function Portfolio() {
     };
 
     return (
-        <section className={styles.section} aria-labelledby="portfolio-title">
+        <section className={styles.section} aria-labelledby="portfolio-title" ref={sectionRef}>
             <div className="container">
                 <div className={styles.intro}>
                     <div className={styles.eyebrow}>
@@ -120,17 +143,6 @@ export default function Portfolio() {
                 </div>
 
                 <div className={styles.sliderWrap}>
-                    <button
-                        type="button"
-                        className={`${styles.arrow} ${styles.arrowLeft}`}
-                        onClick={handlePrev}
-                        aria-label="Previous portfolio item"
-                    >
-                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                            <path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                    </button>
-
                     <div className={styles.cards} ref={cardsRef}>
                         {/* Author */}
                         <div className={styles.authorCard} fade-up="portfolio-cards">
@@ -223,17 +235,6 @@ export default function Portfolio() {
                             </div>
                         </div>
                     </div>
-
-                    <button
-                        type="button"
-                        className={`${styles.arrow} ${styles.arrowRight}`}
-                        onClick={handleNext}
-                        aria-label="Next portfolio item"
-                    >
-                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                            <path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                    </button>
                 </div>
             </div>
         </section>

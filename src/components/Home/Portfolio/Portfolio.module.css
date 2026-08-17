@@ -51,38 +51,6 @@
 .sliderWrap {
     display: flex;
     align-items: center;
-    gap: 20px;
-}
-
-.arrow {
-    flex-shrink: 0;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #12212e;
-    color: var(--light-color);
-    cursor: pointer;
-    transition:
-        transform 0.3s ease,
-        background-color 0.3s ease;
-}
-
-.arrow svg {
-    width: 20px;
-    height: 20px;
-}
-
-.arrow:hover {
-    background: var(--primary-color);
-    transform: scale(1.06);
-}
-
-.arrow:focus-visible {
-    outline: 2px solid var(--secondary-color);
-    outline-offset: 3px;
 }
 
 .cards {
@@ -419,10 +387,6 @@
         font-size: clamp(30px, 6vw, 44px);
     }
 
-    .sliderWrap {
-        gap: 12px;
-    }
-
     .cards {
         flex-direction: column;
     }
@@ -461,11 +425,6 @@
 
     .bookCard {
         padding: 24px;
-    }
-
-    .arrow {
-        width: 44px;
-        height: 44px;
     }
 }
 
