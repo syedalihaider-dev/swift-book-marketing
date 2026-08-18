@@ -120,13 +120,16 @@
     border-right: 1.5px solid var(--secondary-color);
     border-bottom: none;
     border-radius: 500px 500px 0 0;
+    padding: 12px 12px 0;
     overflow: hidden;
 }
 
 .authorPhoto {
     position: relative;
     width: 100%;
-    aspect-ratio: 4 / 5;
+    height: 300px;
+    border-radius: 100px 100px 0 0;
+    overflow: hidden;
 }
 
 .authorPhoto img {
@@ -371,9 +374,9 @@
     width: 42%;
     border-radius: 6px;
     overflow: hidden;
-    box-shadow:
+    /* box-shadow:
         0 12px 28px rgba(15, 20, 20, 0.18),
-        0 0 0 1px rgba(15, 20, 20, 0.06);
+        0 0 0 1px rgba(15, 20, 20, 0.06); */
 }
 
 .bookCover {

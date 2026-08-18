@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useRef, useState, useEffect, useCallback } from "react";
 import styles from "./Faq.module.css";
 
 const FAQS = [
@@ -60,10 +60,60 @@ function ChatIcon() {
 export default function Faq() {
     const [openIndex, setOpenIndex] = useState(0);
     const idBase = useId();
+    const panelRefs = useRef([]);
+
+    const setPanelRef = useCallback(
+        (index) => (el) => {
+            panelRefs.current[index] = el;
+        },
+        []
+    );
 
     const toggle = (index) => {
         setOpenIndex((current) => (current === index ? -1 : index));
     };
+
+    const isFirstRender = useRef(true);
+
+    // Animate height on openIndex change
+    useEffect(() => {
+        panelRefs.current.forEach((panel, i) => {
+            if (!panel) return;
+            const inner = panel.firstElementChild;
+            if (!inner) return;
+
+            if (i === openIndex) {
+                if (isFirstRender.current) {
+                    // First render: show the initially-open item without animation
+                    panel.style.height = "auto";
+                } else {
+                    // Opening: set height to scrollHeight, then auto after transition
+                    const fullHeight = inner.scrollHeight;
+                    panel.style.height = "0px";
+                    // Force reflow so the browser registers the 0px state
+                    // eslint-disable-next-line no-unused-expressions
+                    panel.offsetHeight;
+                    panel.style.height = `${fullHeight}px`;
+
+                    const onEnd = () => {
+                        panel.style.height = "auto";
+                        panel.removeEventListener("transitionend", onEnd);
+                    };
+                    panel.addEventListener("transitionend", onEnd);
+                }
+            } else {
+                // Closing: if currently auto or has height, collapse to 0
+                if (panel.style.height === "auto" || panel.offsetHeight > 0) {
+                    panel.style.height = `${panel.scrollHeight}px`;
+                    // Force reflow
+                    // eslint-disable-next-line no-unused-expressions
+                    panel.offsetHeight;
+                    panel.style.height = "0px";
+                }
+            }
+        });
+        isFirstRender.current = false;
+    }, [openIndex]);
 
     return (
         <section className={styles.section} aria-labelledby="faq-title">
@@ -133,25 +183,30 @@ export default function Faq() {
                                             >
                                                 <span className={styles.itemNumber}>{item.number}</span>
                                                 <span className={styles.itemQuestion}>{item.question}</span>
-                                                <span className={styles.itemToggle} aria-hidden="true">
-                                                    {isOpen ? "×" : "+"}
+                                                <span
+                                                    className={`${styles.itemToggle} ${isOpen ? styles.itemToggleOpen : ""}`}
+                                                    aria-hidden="true"
+                                                >
+                                                    +
                                                 </span>
                                             </button>
                                         </h3>
 
-                                        {isOpen && (
-                                            <div
-                                                id={panelId}
-                                                role="region"
-                                                aria-labelledby={headerId}
-                                                className={styles.itemAnswerRow}
-                                            >
+                                        <div
+                                            id={panelId}
+                                            role="region"
+                                            aria-labelledby={headerId}
+                                            className={styles.itemPanel}
+                                            ref={setPanelRef(index)}
+                                            aria-hidden={!isOpen}
+                                        >
+                                            <div className={styles.itemAnswerRow}>
                                                 <p className={styles.itemAnswer}>{item.answer}</p>
                                                 <span className={styles.itemToggleGhost} aria-hidden="true">
                                                     ×
                                                 </span>
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
                                 );
                             })}

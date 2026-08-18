@@ -226,6 +226,19 @@
     font-size: 22px;
     font-weight: 400;
     line-height: 1;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-block;
+}
+
+.itemToggleOpen {
+    transform: rotate(45deg);
+}
+
+/* Smooth collapsible panel */
+.itemPanel {
+    height: 0;
+    overflow: hidden;
+    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .itemAnswerRow {

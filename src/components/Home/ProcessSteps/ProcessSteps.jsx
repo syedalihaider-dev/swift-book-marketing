@@ -95,6 +95,8 @@ export default function ProcessSteps() {
                 "(min-width: 992px) and (prefers-reduced-motion: no-preference)",
                 () => {
                     let active = 0;
+
+                    // ── Accordion body collapse/expand ──
                     gsap.set(bodies, { height: 0, opacity: 0 });
                     gsap.set(bodies[0], { height: "auto", opacity: 1 });
                     rows[0].classList.add(styles.rowActive);
@@ -114,29 +116,7 @@ export default function ProcessSteps() {
                     };
                     playTiles(rows[0]);
 
-                    // Height-animating the previous/next body while a live
-                    // "closest header" read runs every scroll tick is a
-                    // feedback loop — the layout shifting mid-transition
-                    // changes what reads as closest, re-triggering another
-                    // activation before the first has settled. Locking out
-                    // new activations until the current pair finishes (and
-                    // re-checking once on the way out) keeps it stable.
                     let animating = false;
-
-                    const checkClosest = () => {
-                        const viewportCenter = window.innerHeight / 2;
-                        let closest = 0;
-                        let closestDistance = Infinity;
-                        headers.forEach((header, i) => {
-                            const rect = header.getBoundingClientRect();
-                            const distance = Math.abs(rect.top + rect.height / 2 - viewportCenter);
-                            if (distance < closestDistance) {
-                                closestDistance = distance;
-                                closest = i;
-                            }
-                        });
-                        return closest;
-                    };
 
                     const activate = (index) => {
                         if (index === active || animating) return;
@@ -162,22 +142,34 @@ export default function ProcessSteps() {
                             onComplete: () => {
                                 gsap.set(bodies[index], { height: "auto" });
                                 animating = false;
-                                activate(checkClosest());
                             },
                         });
                         playTiles(rows[index]);
                     };
 
-                    // A continuous "which header is nearest center" check
-                    // (rather than per-header enter/leave edges) can't skip a
-                    // row on a fast or large scroll jump.
+                    // ── Pin the section & drive steps by scroll progress ──
+                    // The section sticks in place while the user scrolls
+                    // through (steps × 100vh) of virtual distance. Progress
+                    // is divided into equal slices — one per step.
+                    const stepCount = rows.length; // 4
+
                     ScrollTrigger.create({
                         trigger: sectionRef.current,
-                        start: "top bottom",
-                        end: "bottom top",
-                        onUpdate: () => {
+                        start: "top top",
+                        // Total scroll distance = (stepCount - 1) * viewport height
+                        // so each step gets one full viewport of scroll
+                        end: () => `+=${(stepCount - 1) * window.innerHeight}`,
+                        pin: true,
+                        pinSpacing: true,
+                        scrub: false,
+                        onUpdate: (self) => {
                             if (animating) return;
-                            activate(checkClosest());
+                            // Map 0-1 progress to step index 0..(stepCount-1)
+                            const target = Math.min(
+                                Math.floor(self.progress * stepCount),
+                                stepCount - 1
+                            );
+                            activate(target);
                         },
                     });
 
@@ -191,11 +183,32 @@ export default function ProcessSteps() {
                 // Small screens and reduced-motion: every step fully open,
                 // plain readable stack — no scroll-linked accordion, no pin.
                 gsap.set(bodies, { clearProps: "all" });
+                gsap.set(rows, { clearProps: "opacity,y" });
                 gsap.set(
                     rows.flatMap((row) => Array.from(row.querySelectorAll(`.${styles.tile}`))),
                     { display: "none" }
                 );
                 rows.forEach((row) => row.classList.add(styles.rowActive));
+
+                // Mobile: simpler fade-in on scroll for each row
+                rows.forEach((row, i) => {
+                    gsap.set(row, { opacity: 0, y: 40 });
+                    ScrollTrigger.create({
+                        trigger: row,
+                        start: "top 90%",
+                        once: true,
+                        onEnter: () => {
+                            gsap.to(row, {
+                                opacity: 1,
+                                y: 0,
+                                duration: 0.7,
+                                ease: "power2.out",
+                                delay: i * 0.1,
+                            });
+                        },
+                    });
+                });
+
                 return undefined;
             });
 
