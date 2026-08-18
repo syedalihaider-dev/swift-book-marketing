@@ -95,84 +95,53 @@ function loadFancybox() {
     return fancyboxPromise;
 }
 
-// Each extra slide adds this many viewport-heights of scroll distance.
-const SCROLL_DISTANCE_PER_ITEM = 0.8;
-
 export default function Portfolio() {
     const sectionRef = useRef(null);
-    const cardsRef = useRef(null);
-    const [index, setIndex] = useState(0);
-    const [loadingVideo, setLoadingVideo] = useState(false);
+    const trackRef = useRef(null);
+    const [loadingId, setLoadingId] = useState(null);
 
     const total = ITEMS.length;
-    const item = ITEMS[index];
 
     useEffect(() => {
         gsap.registerPlugin(ScrollTrigger);
 
-        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (prefersReducedMotion || total <= 1) return undefined;
-
         const ctx = gsap.context(() => {
-            const el = cardsRef.current;
-            let current = 0;
-            let transitioning = false;
+            const mm = gsap.matchMedia();
 
-            const goTo = (nextIndex) => {
-                if (!el || nextIndex === current || transitioning) return;
-                transitioning = true;
-                const direction = nextIndex > current ? "next" : "prev";
-                current = nextIndex;
-                setIndex(nextIndex);
+            mm.add(
+                "(min-width: 992px) and (prefers-reduced-motion: no-preference)",
+                () => {
+                    // Slide the track left: each slide is 1/total of track width.
+                    // Moving xPercent by -(total-1)/total*100 advances exactly
+                    // (total-1) full slide widths — right-to-left.
+                    gsap.to(trackRef.current, {
+                        xPercent: -((total - 1) / total) * 100,
+                        ease: "none",
+                        scrollTrigger: {
+                            trigger: sectionRef.current,
+                            start: "top top",
+                            end: () =>
+                                `+=${(total - 1) * window.innerHeight * 0.9}`,
+                            pin: true,
+                            pinSpacing: true,
+                            scrub: 0.8,
+                            anticipatePin: 1,
+                            invalidateOnRefresh: true,
+                        },
+                    });
 
-                gsap.to(el, {
-                    opacity: 0,
-                    x: direction === "next" ? -40 : 40,
-                    duration: 0.3,
-                    ease: "power2.in",
-                    onComplete: () => {
-                        gsap.fromTo(
-                            el,
-                            { opacity: 0, x: direction === "next" ? 40 : -40 },
-                            {
-                                opacity: 1,
-                                x: 0,
-                                duration: 0.45,
-                                ease: "power2.out",
-                                onComplete: () => { transitioning = false; },
-                            }
-                        );
-                    },
-                });
-            };
+                    return () => {};
+                }
+            );
 
-            // Pin the section while scrolling through all slides.
-            // pinSpacing: false keeps surrounding sections flush — no blank
-            // gap is inserted; the extra scroll distance lives in the pin itself.
-            ScrollTrigger.create({
-                trigger: sectionRef.current,
-                start: "top top",
-                end: () => `+=${(total - 1) * window.innerHeight * SCROLL_DISTANCE_PER_ITEM}`,
-                pin: true,
-                pinSpacing: true,
-                anticipatePin: 1,
-                invalidateOnRefresh: true,
-                onUpdate: (self) => {
-                    // Map progress -> slide index
-                    const next = Math.min(
-                        total - 1,
-                        Math.floor(self.progress * total)
-                    );
-                    goTo(next);
-                },
-            });
+            return () => mm.revert();
         }, sectionRef);
 
         return () => ctx.revert();
     }, [total]);
 
-    const handlePlay = async () => {
-        setLoadingVideo(true);
+    const handlePlay = async (item) => {
+        setLoadingId(item.id);
         try {
             const Fancybox = await loadFancybox();
             Fancybox.show(
@@ -185,133 +154,186 @@ export default function Portfolio() {
                 }
             );
         } finally {
-            setLoadingVideo(false);
+            setLoadingId(null);
         }
     };
 
     return (
-        <section className={styles.section} aria-labelledby="portfolio-title" ref={sectionRef}>
+        <section
+            ref={sectionRef}
+            className={styles.section}
+            aria-labelledby="portfolio-title"
+        >
+            {/* Centered heading — stays inside container */}
             <div className="container">
                 <div className={styles.intro}>
                     <div className={styles.eyebrow}>
-                        <div className={styles.eyebrowLine} data-side="left" />
+                        <div className={styles.eyebrowLine} />
                         <span>Portfolio</span>
-                        <div className={styles.eyebrowLine} data-side="right" />
+                        <div className={styles.eyebrowLine} />
                     </div>
-
                     <h2 id="portfolio-title" className={styles.heading}>
                         Books we&apos;ve helped bring to life.
                         <br />
                         <em>Stories that continue to grow.</em>
                     </h2>
                 </div>
+            </div>
 
-                <div className={styles.sliderWrap}>
-                    <div className={styles.cards} ref={cardsRef}>
-                        {/* Author */}
-                        <div className={styles.authorCard}>
-                            <div className={styles.authorPhotoFrame}>
-                                <span className={styles.archMark} data-side="left" aria-hidden="true">
-                                    ✦
-                                </span>
-                                <span className={styles.archMark} data-side="right" aria-hidden="true">
-                                    ✦
-                                </span>
-                                <div className={styles.authorPhoto}>
-                                    <Image
-                                        src={item.author.photo}
-                                        alt={item.author.name}
-                                        fill
-                                        sizes="(max-width: 767px) 60vw, 220px"
-                                    />
-                                </div>
-                            </div>
-                            <div className={styles.authorBase}>
-                                <p className={styles.authorName}>{item.author.name}</p>
-                                <p className={styles.authorRole}>{item.author.role}</p>
-                                <div className={styles.authorDivider} aria-hidden="true" />
-                                <p className={styles.authorBio}>{item.author.bio}</p>
-                                <p className={styles.authorSignature} aria-hidden="true">
-                                    {item.author.name}
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Video */}
-                        <div className={styles.videoCard}>
-                            <div className={styles.videoThumb}>
-                                <Image
-                                    src={item.video.thumbnail}
-                                    alt={item.video.heading}
-                                    fill
-                                    sizes="(max-width: 767px) 100vw, 32vw"
-                                    className={styles.videoImg}
-                                />
-                                <div className={styles.videoOverlay} aria-hidden="true" />
-
-                                <div className={styles.videoInfo}>
-                                    <div className={styles.videoEyebrow}>
-                                        <span>{item.video.eyebrow}</span>
+            {/* Full-width slider — outside container */}
+            <div className={styles.sliderViewport}>
+                <div
+                    ref={trackRef}
+                    className={styles.sliderTrack}
+                    style={{ width: `${total * 100}%` }}
+                >
+                    {ITEMS.map((item) => (
+                        <div
+                            key={item.id}
+                            className={styles.slide}
+                            style={{ width: `${100 / total}%` }}
+                        >
+                            <div className={styles.slideCards}>
+                                {/* ── Author card ── */}
+                                <div className={styles.authorCard}>
+                                    <div className={styles.authorPhotoFrame}>
+                                        <div className={styles.archFrame}>
+                                            <div className={styles.authorPhoto}>
+                                                <Image
+                                                    src={item.author.photo}
+                                                    alt={item.author.name}
+                                                    fill
+                                                    sizes="220px"
+                                                />
+                                            </div>
+                                        </div>
+                                        <span
+                                            className={styles.archMark}
+                                            data-side="left"
+                                            aria-hidden="true"
+                                        >
+                                            ✦
+                                        </span>
+                                        <span
+                                            className={styles.archMark}
+                                            data-side="right"
+                                            aria-hidden="true"
+                                        >
+                                            ✦
+                                        </span>
                                     </div>
-                                    <h3 className={styles.videoHeading}>{item.video.heading}</h3>
-                                    <div className={styles.videoDivider} aria-hidden="true" />
-                                    <p className={styles.videoDescription}>{item.video.description}</p>
+                                    <div className={styles.authorBase}>
+                                        <p className={styles.authorName}>
+                                            {item.author.name}
+                                        </p>
+                                        <p className={styles.authorRole}>
+                                            {item.author.role}
+                                        </p>
+                                        <div
+                                            className={styles.authorDivider}
+                                            aria-hidden="true"
+                                        >
+                                            <span>✦</span>
+                                        </div>
+                                        <p className={styles.authorBio}>
+                                            {item.author.bio}
+                                        </p>
+                                        <p
+                                            className={styles.authorSignature}
+                                            aria-hidden="true"
+                                        >
+                                            {item.author.name}
+                                        </p>
+                                    </div>
                                 </div>
 
-                                <button
-                                    type="button"
-                                    className={styles.playButton}
-                                    aria-label={`Play video: ${item.video.heading}`}
-                                    aria-busy={loadingVideo}
-                                    disabled={loadingVideo}
-                                    onClick={handlePlay}
-                                >
-                                    <span className={styles.playRing} aria-hidden="true" />
-                                    <svg viewBox="0 0 24 24" className={styles.playIcon} aria-hidden="true" focusable="false">
-                                        <path d="M8 5v14l11-7z" fill="currentColor" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Book */}
-                        <div className={styles.bookCard}>
-                            <div className={styles.bookCoverWrap} puzzle-image="#efe8d6">
-                                <Image
-                                    src={item.book.cover}
-                                    alt={item.book.title}
-                                    width={item.book.coverWidth}
-                                    height={item.book.coverHeight}
-                                    className={styles.bookCover}
-                                />
-                            </div>
-                            <div className={styles.bookContent}>
-                                <div className={styles.bookEyebrow}>
-                                    <span>{item.book.eyebrow}</span>
+                                {/* ── Video card ── */}
+                                <div className={styles.videoCard}>
+                                    <div className={styles.videoThumb}>
+                                        <Image
+                                            src={item.video.thumbnail}
+                                            alt={item.video.heading}
+                                            fill
+                                            sizes="45vw"
+                                            className={styles.videoImg}
+                                        />
+                                        <div
+                                            className={styles.videoOverlay}
+                                            aria-hidden="true"
+                                        />
+                                        <div className={styles.videoInfo}>
+                                            <div className={styles.videoEyebrow}>
+                                                <span>{item.video.eyebrow}</span>
+                                            </div>
+                                            <h3 className={styles.videoHeading}>
+                                                {item.video.heading}
+                                            </h3>
+                                            <div
+                                                className={styles.videoDivider}
+                                                aria-hidden="true"
+                                            />
+                                            <p className={styles.videoDescription}>
+                                                {item.video.description}
+                                            </p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            className={styles.playButton}
+                                            aria-label={`Play video: ${item.video.heading}`}
+                                            aria-busy={loadingId === item.id}
+                                            disabled={loadingId === item.id}
+                                            onClick={() => handlePlay(item)}
+                                        >
+                                            <span
+                                                className={styles.playRing}
+                                                aria-hidden="true"
+                                            />
+                                            <svg
+                                                viewBox="0 0 24 24"
+                                                className={styles.playIcon}
+                                                aria-hidden="true"
+                                                focusable="false"
+                                            >
+                                                <path
+                                                    d="M8 5v14l11-7z"
+                                                    fill="currentColor"
+                                                />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
-                                <h3 className={styles.bookHeading}>
-                                    {item.book.title}
-                                    <br />
-                                    <em>{item.book.titleItalic}</em>
-                                </h3>
-                                <div className={styles.bookDivider} aria-hidden="true" />
-                                <p className={styles.bookCaption}>{item.book.caption}</p>
+
+                                {/* ── Book card ── */}
+                                <div className={styles.bookCard}>
+                                    <div className={styles.bookCoverWrap}>
+                                        <Image
+                                            src={item.book.cover}
+                                            alt={item.book.title}
+                                            width={item.book.coverWidth}
+                                            height={item.book.coverHeight}
+                                            className={styles.bookCover}
+                                        />
+                                    </div>
+                                    <div className={styles.bookContent}>
+                                        <div className={styles.bookEyebrow}>
+                                            <span>{item.book.eyebrow}</span>
+                                        </div>
+                                        <h3 className={styles.bookHeading}>
+                                            {item.book.title}
+                                            <br />
+                                            <em>{item.book.titleItalic}</em>
+                                        </h3>
+                                        <div
+                                            className={styles.bookDivider}
+                                            aria-hidden="true"
+                                        />
+                                        <p className={styles.bookCaption}>
+                                            {item.book.caption}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                {/* Slide indicators */}
-                <div className={styles.indicators} aria-label="Portfolio slides" role="tablist">
-                    {ITEMS.map((it, i) => (
-                        <button
-                            key={it.id}
-                            type="button"
-                            role="tab"
-                            aria-selected={i === index}
-                            aria-label={`Slide ${i + 1}: ${it.author.name}`}
-                            className={`${styles.indicator} ${i === index ? styles.indicatorActive : ""}`}
-                        />
                     ))}
                 </div>
             </div>
