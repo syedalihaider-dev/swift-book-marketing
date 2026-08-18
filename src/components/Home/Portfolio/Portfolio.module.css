@@ -97,11 +97,13 @@
 /* ── Author card ── */
 
 .authorCard {
-    flex: 0 0 21%;
+    flex: 0 0 16%;
     display: flex;
     flex-direction: column;
     border-radius: 20px;
     overflow: hidden;
+    /* Don't stretch to full slide height — natural height matches design */
+    align-self: end;
 }
 
 .authorPhotoFrame {
@@ -135,22 +137,22 @@
 /* ✦ diamond marks sit on the cream bg at the sides of the arch */
 .archMark {
     position: absolute;
-    top: 56%;
+    top: 83%;            /* vertically centered on the arch frame */
     transform: translateY(-50%);
     z-index: 2;
     color: var(--secondary-color);
-    font-size: 12px;
+    font-size: 25px;
     line-height: 1;
 }
 
-.archMark[data-side="left"]  { left: 6px; }
-.archMark[data-side="right"] { right: 6px; }
+.archMark[data-side="left"]  { left: 10px; }   /* centered in the 20px cream padding */
+.archMark[data-side="right"] { right: 10px; }
 
 .authorBase {
-    flex: 1;
+    /* flex: 1 removed — parent is auto-height (align-self:flex-start),
+       so flex-basis:0% would collapse this element. Let it size naturally. */
     background: #12212e;
-    padding: 24px 20px 28px;
-    border-radius: 0 0 20px 20px;
+    padding: 22px 18px 26px;
 }
 
 .authorName {
